@@ -1,7 +1,7 @@
 -- Limpa somente dados operacionais de teste. Preserva modalidades, grupos, equipes, atletas e partidas.
 begin;
 update public.matches set score_a=null,score_b=null,sets='[]'::jsonb,winner_id=null,status='Pendente',match_date=null,match_time=null,notes='';
-update public.knockout_matches set team_a_id=null,team_b_id=null,score_a=null,score_b=null,winner_id=null,status='Pendente';
+update public.knockout_matches set team_a_id=null,team_b_id=null,score_a=null,score_b=null,sets='[]'::jsonb,winner_id=null,status='Pendente';
 update public.checkins set arrived=false,notes='';
 commit;
 select
