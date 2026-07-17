@@ -37,5 +37,13 @@ export const supabaseService={
   async updateMatch(id,values){assert(await supabase.from('matches').update({score_a:values.scoreA===''?null:+values.scoreA,score_b:values.scoreB===''?null:+values.scoreB,status:values.status,match_date:values.date||null,match_time:values.time||null,court:values.court,winner_id:values.winnerId||null}).eq('id',id))},
   async updateKnockout(competitionId,id,values){assert(await supabase.from('knockout_matches').update({score_a:values.scoreA===''?null:+values.scoreA,score_b:values.scoreB===''?null:+values.scoreB,status:values.status,winner_id:values.winnerId||null,team_a_id:values.teamA||null,team_b_id:values.teamB||null}).eq('competition_id',competitionId).eq('id',id))},
   async updateCheckin(athleteId,values){assert(await supabase.from('checkins').update(values).eq('athlete_id',athleteId))},
+  async resetTournamentData(){
+    const results=await Promise.all([
+      supabase.from('matches').update({score_a:null,score_b:null,sets:[],winner_id:null,status:'Pendente',match_date:null,match_time:null,notes:''}).neq('id','__none__'),
+      supabase.from('knockout_matches').update({team_a_id:null,team_b_id:null,score_a:null,score_b:null,winner_id:null,status:'Pendente'}).neq('id','__none__'),
+      supabase.from('checkins').update({arrived:false,notes:''}).not('athlete_id','is',null)
+    ]);
+    results.forEach(assert);
+  },
   subscribe(refresh){return supabase.channel('jusa-live').on('postgres_changes',{event:'*',schema:'public',table:'matches'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'knockout_matches'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'checkins'},refresh).subscribe()}
 };
